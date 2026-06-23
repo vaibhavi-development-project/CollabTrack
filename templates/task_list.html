@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+    <div class="container-fluid d-flex align-items-center" style="text-align:center";>
+        <div style="width: 80px;" class="d-none d-lg-block"></div>
+        <span class="navbar-brand mb-0 h1 fs-5 text-secondary mx-auto text-center text-white fw-bold">
+            Welcome <span class="text-white fw-bold"> {{ user.username }}</span>
+        </span>
+        
+        
+    </div>
+</nav>
+<div class="container mt-5">
+     <div class="d-flex justify-content-between">
+        <h2>My Tasks</h2>
+        <a href="{% url 'task_create' %}"
+           class="btn btn-primary">
+            Create Task</a>
+         </div>
+
+    <br>
+<form method="GET" class="mb-3">
+    <select name="status" class="form-select">
+        <option value="">All Tasks</option>
+        <option value="Pending">Pending</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+    </select>
+
+    <button class="btn btn-primary mt-2">
+        Filter
+    </button>
+</form>
+<form method="GET" class="mb-4">
+    
+    <div class="input-group">
+         <input type="text" name="search" class="form-control" placeholder="Search Tasks..." value="{{ request.GET.search }}">
+        <button class="btn btn-success"  type="submit"> Search</button>
+    </div>
+</form>
+    {% for task in tasks %}
+
+    <div class="card mb-3">
+
+        <div class="card-body">
+             <h5>Title: {{ task.title }}</h5>
+            <p>Description:  {{ task.description }}</p>
+            <p>Project:  {{ task.project }}</p>
+            <p>Status:  {{ task.status }}</p>
+            <p>Priority:  {{ task.priority }}</p>
+            <p>Due: {{ task.due_date }}</p>
+            {% if request.user == task.assigned_to or request.user == task.project.created_by%}
+            <a href="{% url 'task_update' task.id %}"
+               class="btn btn-warning">
+                Edit
+            </a>
+            {%endif%}
+            {% if request.user == task.project.created_by %}
+            <a href="{% url 'task_delete' task.id %}"
+               class="btn btn-danger">
+               Delete</a>
+            {% endif %}
+            </div>
+         </div>
+    {% empty %}
+    <div class="alert alert-info">
+        No Tasks found
+    </div>
+    {% endfor %}
+{% if task.status == 'Completed' %}
+    <span class="badge bg-success">
+        Completed
+    </span>
+
+{% elif task.status == 'Pending' %}
+    <span class="badge bg-warning">
+        Pending
+    </span>
+
+{% else %}
+    <span class="badge bg-info">
+        {{ task.status }}
+    </span>
+{% endif %}
+</div>
+
+<nav>
+<ul class="pagination justify-content-center">
+
+{% if tasks.has_previous %}
+<li class="page-item">
+<a class="page-link"
+href="?page={{ tasks.previous_page_number }}">
+Previous
+</a>
+</li>
+{% endif %}
+
+<li class="page-item active">
+<a class="page-link">
+{{ tasks.number }}
+</a>
+</li>
+
+{% if tasks.has_next %}
+<li class="page-item">
+<a class="page-link"
+href="?page={{ tasks.next_page_number }}">
+Next
+</a>
+</li>
+{% endif %}
+
+</ul>
+</nav>
+{% endblock %}

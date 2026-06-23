@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class="card mb-3">
+
+        <div class="card-body">
+            <h5 class="card-title">
+                <a href="{%url 'project_detail' project.id%}"
+                class="text-decoration-none text-black">
+               Project Name:  {{ project.name }}
+                </a>
+            </h5>
+
+            <p>Description:  {{ project.description }}</p>
+
+            <span class="badge bg-info">
+
+                Status:  {{ project.status }}
+
+            </span>
+    <hr>
+
+    <h4>Members</h4>
+
+    <ul>
+        {% for member in project.members.all %}
+            <span class="badge bg-secondary me-1">
+        {{ member.username }}
+    </span>
+{% empty %}
+    <span class="text-muted">
+        No Members
+    </span>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <h4>Tasks</h4>
+<h5>Project Progress</h5>
+
+<div class="progress mb-4">
+
+    <div class="progress-bar
+    {%if progress == 100 %}bg-success
+    {% elif progress >= 50 %}bg-info
+    {%else%}bg-warning
+    {%endif%}"
+    style="width: {{ progress }}%;">{%if progress > 0 %}
+        {{ progress }}%
+        {%endif%}
+    </div>
+
+</div>
+    <ul>
+        {% for task in tasks %}
+            <li>
+                {{ task.title }}
+                -
+                {{ task.status }}
+            </li>
+        {% empty %}
+            <li>No Tasks</li>
+        {% endfor %}
+    </ul>
+
+</div>
+</div>
+{% endblock %}
